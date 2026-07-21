@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: feedback
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=feedback
+    ports:
+      - "5444:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: on-failure
+
+volumes:
+  postgres_data:
