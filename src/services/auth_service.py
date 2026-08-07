@@ -8,13 +8,18 @@ from schemas.auth import TokenData, TokenResponse
 from schemas.user import UserCreate, UserRead
 from src.config import settings
 from passlib.context import CryptContext
+import hmac
+import secrets
+import logging
 
+logger = logging.getLogger(__name__)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AuthService:
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, redis_service: RedisService):
         self.user_repository = user_repository
+        self.redis_service = redis_service
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -51,7 +56,7 @@ class AuthService:
 
             if user_id_str is None or role is None:
                 raise ValueError("Токен не содержит обязательных полей 'sub', 'role'")
-            return TokenData(user_id=user_id_str, role=role)
+            return TokenData(user_id=int(user_id_str), role=role)
 
         except JWTError as exc:
             raise ValueError(f"Не валидный или истекший JWT-токен: {exc}") from exc
@@ -65,6 +70,8 @@ class AuthService:
     """Бизнес логика: регистрация и аутентификация"""
 
     def register_user(self, db: Session, data: UserCreate) -> UserRead:
+        from src.tasks.email_tasks import send_verification_email
+
         existing = self.user_repository.get_by_email(db, data.email)
         if existing:
             raise ValueError(f"Пользователь с email {data.email} уже существует")
@@ -76,7 +83,75 @@ class AuthService:
             "role": "user"
         }
         user = self.user_repository.create(db, user_in)
-        return UserRead.model_validate(user)
+        
+        code = str(secrets.randbelow(1000000)).zfill(6)
+        self.redis_service.set_otp(data.email, code)
+
+        self.redis_service.set_resend_cooldown(data.email)
+
+        send_verification_email.delay(user_email=user.email, user_name=user.name, code=code)
+        
+        logger.info(
+            "Новый пользователь зарегистрирован (pending verification): id=%d email=%s",
+            user.id,
+            user.email,
+        )
+        
+    def verify_email_code(self, db: Session, email: str, code: str) -> TokenResponse:
+        user = self.user_repository.get_by_email(db, email)
+
+        if user is None:
+            raise ValueError("Неверный код верификации")
+
+        if user.is_active:
+            raise ValueError("Email уже подтвержден. Войдите в аккаунт")
+        
+        stored_code = self.redis_service.get_otp(email)
+
+        if stored_code is None:
+            raise ValueError("Код верификации истек. Запросите новый /auth/resend-verification") 
+        
+        if not hmac.compare_digest(stored_code, code):
+            raise ValueError("Неверный код верификации")
+        
+        self.user_repository.update(db, user, {"is_active": True})
+        self.redis_service.delete_otp(email)
+        
+        
+        logger.info(
+            "Пользователь подтвердил email (active): id=%d email=%s",
+            user.id,
+            user.email,
+        )
+        
+        return self.build_token_response(user.id, user.role)
+
+    def resend_verification_code(self, db: Session, email: str) -> None:
+        from src.tasks.email_tasks import send_verification_email
+
+        user = self.user_repository.get_by_email(db, email)
+
+        if user is not None and user.is_active:
+            raise ValueError("Email уже подтвержден, войдите в аккаунт.")
+
+        if not self.redis_service.can_resend(email):
+            cooldown_left = self.redis_service.get_cooldown_ttl(email)
+            raise ValueError(f"Повторная попытка доступна через {cooldown_left} секунд.")
+        
+        if user is not None:
+            code = str(secrets.randbelow(1000000)).zfill(6)
+            self.redis_service.set_otp(email, code)
+            self.redis_service.set_resend_cooldown(email)
+
+            send_verification_email.delay(user_email=user.email, user_name=user.name, code=code)
+        
+            logger.info(
+                "Отправлен повторный код верификации: id=%d email=%s",
+                user.id,
+                user.email,
+            )
+            
+        return 0
 
     def authenticate_user(self, db: Session, email: str, password: str) -> User:
         user = self.user_repository.get_by_email(db, email)

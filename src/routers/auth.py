@@ -79,10 +79,21 @@ async def resend_verification(
         db: Session = Depends(get_db),
         auth_service: AuthService = Depends(get_auth_service)
 ):
+    """
+    Запросить новый OTP-код, если предыдущий истёк или не пришёл.
+
+    Ограничения:
+    
+    - Не чаще 1 раза в 2 минуты (cooldown защита от спама)
+    - Если email не найден — ответ одинаков (защита от enumeration)
+    """
     try:
         auth_service.resend_verification_code(db, email=body.email)
         return MessageResponse(
-            message=f"Новый код подтверждения отправлен на {body.email}."
+            message=(
+                f"Если аккаунт с {body.email} существует и не активирован — "
+                "новый код отправлен. Проверь почту."
+            )
         )
     except ValueError as e:
         error_msg = str(e)
@@ -91,12 +102,10 @@ async def resend_verification(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=error_msg
             )
-        if "Повторная отправка" in error_msg:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=error_msg
-            )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=error_msg
+        )
 
 
 @router.post(
@@ -148,12 +157,13 @@ async def refresh_token(
     )
     try:
         token_data = auth_service.decode_token(body.refresh_token)
-
     except ValueError:
         raise credentials_exception
+
     user = user_repository.get_by_id(db, token_data.user_id)
     if user is None or not user.is_active:
         raise credentials_exception
+        
     return auth_service.build_token_response(user.id, user.role)
 
 
