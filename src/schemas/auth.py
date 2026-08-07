@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 
 
 class TokenResponse(BaseModel):
@@ -20,3 +20,16 @@ class LoginRequest(BaseModel):
     """Альтернативная схема для JSON-логина (не OAuth2-форм)."""
     email: str = Field(..., examples=["ivan@example.com"])
     password: str = Field(..., min_length=8, examples=["strongPass1!"])
+
+class VerifyEmailRequest(BaseModel):
+    """Тело запроса для подтверждения email по OTP-коду"""
+    email: EmailStr = Field(..., examples=["ivan@example.com"])
+    code: str = Field(..., min_length=4, max_length=8, examples=["123456"])
+
+class ResendVerificationRequest(BaseModel):
+    """Тело запроса для повторной отправки кода подтверждения email"""
+    email: EmailStr = Field(..., examples=["ivan@example.com"])
+
+class MessageResponse(BaseModel):
+    """Универсальный ответ с текстовым сообщением"""
+    message: str = Field(..., examples=["Письмо с подтверждением отправлено"])

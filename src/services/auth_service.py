@@ -73,8 +73,7 @@ class AuthService:
             "name": data.name,
             "email": data.email,
             "password": self.hash_password(data.password),
-            "role": "user",
-            "is_active": True
+            "role": "user"
         }
         user = self.user_repository.create(db, user_in)
         return UserRead.model_validate(user)

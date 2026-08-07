@@ -1,0 +1,63 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# --- Виртуальное окружение ---
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Переменные окружения / секреты ---
+.env
+.env.*
+!.env.example
+
+# --- FastAPI / общие артефакты сборки ---
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- SQLAlchemy / базы данных ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Alembic ---
+# Миграции коммитим, но локальные логи/кэш — нет
+alembic/versions/__pycache__/
+
+# --- Docker ---
+docker-compose.override.yml
+*.env.docker
+
+# --- Логи ---
+*.log
+logs/
+
+# --- Кэши тестов и линтеров ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- IDE / редакторы ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- ОС-специфичные файлы ---
+.DS_Store
+Thumbs.db
+
+# --- Прочее ---
+*.bak
+*.tmp

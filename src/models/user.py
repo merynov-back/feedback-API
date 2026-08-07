@@ -10,4 +10,4 @@ class User(Base):
     email: Mapped[str] = mapped_column(String)
     password: Mapped[str | None] = mapped_column(String, nullable=True ,default=None)
     role: Mapped[str] = mapped_column(String, default="user")
-    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

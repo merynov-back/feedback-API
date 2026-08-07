@@ -9,6 +9,19 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: Optional[int] = None
     REFRESH_TOKEN_EXPIRE_DAYS: Optional[int] = None
 
+    REDIS_URL: Optional[str | None] = None
+    CELERY_BROKER_URL: Optional[str | None] = None
+    CELERY_RESULT_BACKEND: Optional[str | None] = None
+
+    SMTP_HOST: Optional[str | None] = None
+    SMTP_PORT: Optional[int] = None
+    SMTP_USER: Optional[str | None] = None
+    SMTP_PASSWORD: Optional[str | None] = None
+
+    OTP_TTL_SECONDS: Optional[int] = None
+    OTP_RESEND_COOLDOWN_SECONDS: Optional[int] = None
+
+
     model_config = SettingsConfigDict(
         env_file=Path(__file__).parent.parent / ".env",
         env_file_encoding="utf-8",
