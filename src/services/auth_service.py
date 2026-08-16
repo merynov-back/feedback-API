@@ -2,10 +2,11 @@ from datetime import timedelta, datetime, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-from models.user import User
-from repositories.user_repository import UserRepository
-from schemas.auth import TokenData, TokenResponse
-from schemas.user import UserCreate, UserRead
+from src.models.user import User
+from src.repositories.user_repository import UserRepository
+from src.schemas.auth import TokenData, TokenResponse
+from src.schemas.user import UserCreate, UserRead
+from src.services.redis_service import RedisService
 from src.config import settings
 from passlib.context import CryptContext
 import hmac
@@ -89,7 +90,7 @@ class AuthService:
 
         self.redis_service.set_resend_cooldown(data.email)
 
-        send_verification_email.delay(user_email=user.email, user_name=user.name, code=code)
+        send_verification_email.delay(user_email=user.email, user_name=user.name, otp_code=code)
         
         logger.info(
             "Новый пользователь зарегистрирован (pending verification): id=%d email=%s",
@@ -143,7 +144,7 @@ class AuthService:
             self.redis_service.set_otp(email, code)
             self.redis_service.set_resend_cooldown(email)
 
-            send_verification_email.delay(user_email=user.email, user_name=user.name, code=code)
+            send_verification_email.delay(user_email=user.email, user_name=user.name, otp_code=code)
         
             logger.info(
                 "Отправлен повторный код верификации: id=%d email=%s",

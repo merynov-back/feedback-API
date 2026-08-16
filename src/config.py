@@ -17,9 +17,11 @@ class Settings(BaseSettings):
     SMTP_PORT: Optional[int] = None
     SMTP_USER: Optional[str | None] = None
     SMTP_PASSWORD: Optional[str | None] = None
+    EMAILS_FROM_NAME: Optional[str | None] = None
+    EMAILS_FROM_EMAIL: Optional[str | None] = None
 
-    OTP_TTL_SECONDS: Optional[int] = None
-    OTP_RESEND_COOLDOWN_SECONDS: Optional[int] = None
+    OTP_TTL_SECONDS: int = 900
+    OTP_RESEND_COOLDOWN_SECONDS: int = 120
 
 
     model_config = SettingsConfigDict(

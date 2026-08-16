@@ -3,10 +3,12 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from starlette import status
-from database import engine
-from models.user import User
-from repositories.user_repository import UserRepository
-from services.auth_service import AuthService
+from src.database import engine
+from src.models.user import User
+from src.repositories.user_repository import UserRepository
+from src.services.auth_service import AuthService
+from src.services.redis_service import RedisService
+from src.dependencies.redis import get_redis_service
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
@@ -18,9 +20,10 @@ def get_user_repository() -> UserRepository:
     return UserRepository()
 
 def get_auth_service(
-        user_repository: UserRepository = Depends(get_user_repository)
+        user_repository: UserRepository = Depends(get_user_repository),
+        redis_service: RedisService = Depends(get_redis_service)
 ) -> AuthService:
-    return AuthService(user_repository)
+    return AuthService(user_repository, redis_service)
 
 
 """Зависимость: текущий пользователь из JWT"""

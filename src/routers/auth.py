@@ -1,16 +1,13 @@
-from copy import error
-from dependencies import auth
-from schemas.auth import MessageResponse
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette import status
-from dependencies.auth import get_db, get_auth_service, get_current_active_user, get_user_repository
-from models.user import User
-from repositories.user_repository import UserRepository
-from schemas.auth import TokenResponse, RefreshRequest, VerifyEmailRequest, ResendVerificationRequest
-from schemas.user import UserRead, UserCreate
-from services.auth_service import AuthService
+from src.dependencies.auth import get_db, get_auth_service, get_current_active_user, get_user_repository
+from src.models.user import User
+from src.repositories.user_repository import UserRepository
+from src.schemas.auth import MessageResponse, TokenResponse, RefreshRequest, VerifyEmailRequest, ResendVerificationRequest
+from src.schemas.user import UserRead, UserCreate
+from src.services.auth_service import AuthService
 
 
 router = APIRouter(prefix="/auth", tags=["🔑 Auth"])
