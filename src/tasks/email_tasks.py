@@ -124,7 +124,7 @@ def send_verification_email(
     try:
         msg = _build_verification_email(user_email, user_name, otp_code)
 
-        with smtplib.SMTP_SSL(
+        with smtplib.SMTP(
             host=settings.SMTP_HOST,
             port=settings.SMTP_PORT,
         ) as server:
