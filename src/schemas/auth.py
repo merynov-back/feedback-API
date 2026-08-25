@@ -9,7 +9,7 @@ class TokenResponse(BaseModel):
 
 class TokenData(BaseModel):
     """Данные, извлеченные из JWT-токена"""
-    user_id: str
+    user_id: int
     role: str
 
 class RefreshRequest(BaseModel):
