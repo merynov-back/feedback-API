@@ -1,4 +1,10 @@
 $kind: http-request
-url: ""
-method: GET
+name: Token
+url: "{{base_url}}/auth/token"
+method: POST
+body:
+  type: urlencoded
+  content:
+    username: ivan@example.com
+    password: strongpassword123
 order: 2608522254485711

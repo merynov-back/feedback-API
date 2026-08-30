@@ -1,4 +1,9 @@
 $kind: http-request
-url: ""
+name: Get Me
+url: "{{base_url}}/auth/me"
 method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
 order: 4252154880280125

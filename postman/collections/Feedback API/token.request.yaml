@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{base_url}}/auth/token"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: text
+      key: username
+      value: email2323@gmail.com
+      description: ""
+      disabled: false
+    - type: text
+      key: password
+      value: asdfasf-23
+      description: ""
+      disabled: false
+order: 4175086935872347

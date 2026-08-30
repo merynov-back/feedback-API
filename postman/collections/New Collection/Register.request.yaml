@@ -1,4 +1,13 @@
 $kind: http-request
-url: ""
-method: GET
+name: Register
+url: "{{base_url}}/auth/register"
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "name": "Ivan Ivanov2",
+      "email": "iva2n2@example.com",
+      "password": "strongpassword123"
+    }
 order: 1784037610440

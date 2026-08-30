@@ -61,3 +61,11 @@ Thumbs.db
 # --- Прочее ---
 *.bak
 *.tmp
+
+# --- Инструменты / агенты ---
+.agents/
+skills-lock.json
+help.txt
+
+# --- Postman IDE (внутренние данные) ---
+.postman/
