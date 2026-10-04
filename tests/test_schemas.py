@@ -1,4 +1,9 @@
-from src.schemas.auth import TokenResponse
+import pytest
+from pydantic import ValidationError
+
+from src.schemas.auth import TokenResponse, VerifyEmailRequest
+from src.schemas.user import UserCreate, UserRead
+
 class TestUserCreate:
     """Группа тестов для схемы UserCreate."""
 

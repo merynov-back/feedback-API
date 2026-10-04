@@ -5,6 +5,15 @@ import pytest_asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker, Session
+from unittest.mock import MagicMock
+
+from src.main import app
+from src.models.user import User
+from src.dependencies.auth import get_db
+from src.dependencies.redis import get_redis_service
+from src.repositories.user_repository import UserRepository
+from src.services.auth_service import AuthService
+from src.services.redis_service import RedisService
 
 
 

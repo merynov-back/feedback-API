@@ -1,4 +1,4 @@
-from src.repositories.user import UserRepository
+from src.repositories.user_repository import UserRepository
 from src.models.user import User
 import pytest
 from pytest_asyncio import fixture
