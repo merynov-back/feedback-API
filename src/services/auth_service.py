@@ -33,7 +33,7 @@ class AuthService:
 
     def _create_token(self, data: dict, expire_delta: timedelta) -> str:
         to_encode = data.copy()
-        expire = datetime.utcnow() + expire_delta
+        expire = datetime.now(tz=timezone.utc) + expire_delta
         to_encode.update({"exp": expire, "iat": datetime.now(tz=timezone.utc)})
         return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
@@ -164,6 +164,6 @@ class AuthService:
             raise ValueError("Неверный email или пароль")
 
         if not user.is_active:
-            raise ValueError("Аккаунт деактивирован, обратитесь к администратору")
+            raise ValueError("Аккаунт не активирован. Подтвердите email")
 
         return user

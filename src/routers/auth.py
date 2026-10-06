@@ -53,12 +53,12 @@ async def verify_email(
 
     except ValueError as e:
         error_msg = str(e)
-        if "истёк" in error_msg:
+        if "истек" in error_msg:
             raise HTTPException(
                 status_code=status.HTTP_410_GONE,
                 detail=error_msg
             )
-        if "уже подтверждён" in error_msg:
+        if "уже подтвержден" in error_msg:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=error_msg
@@ -94,7 +94,7 @@ async def resend_verification(
         )
     except ValueError as e:
         error_msg = str(e)
-        if "уже подтверждён" in error_msg:
+        if "уже подтвержден" in error_msg:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=error_msg

@@ -24,7 +24,7 @@ class LoginRequest(BaseModel):
 class VerifyEmailRequest(BaseModel):
     """Тело запроса для подтверждения email по OTP-коду"""
     email: EmailStr = Field(..., examples=["ivan@example.com"])
-    code: str = Field(..., min_length=4, max_length=8, examples=["123456"])
+    code: str = Field(..., pattern=r"^\d{6}$", examples=["123456"])
 
 class ResendVerificationRequest(BaseModel):
     """Тело запроса для повторной отправки кода подтверждения email"""
