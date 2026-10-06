@@ -137,6 +137,30 @@ def registered_user(db_session) -> User:
 
 
 @pytest.fixture(scope="function")
+def active_user(db_session) -> User:
+    """
+    Создаёт активированного пользователя напрямую в БД — is_active=True.
+
+    Используй когда нужен юзер, который может логиниться
+    и обращаться к защищённым эндпоинтам.
+    """
+    import bcrypt
+    hashed = bcrypt.hashpw(b"TestPass123!", bcrypt.gensalt()).decode("utf-8")
+
+    user = User(
+        name="Active User",
+        email="active@example.com",
+        password=hashed,
+        role="user",
+        is_active=True,
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
+
+
+@pytest.fixture(scope="function")
 def auth_headers(client, active_user) -> dict:
     """
     Возвращает заголовки авторизации для активного пользователя.
