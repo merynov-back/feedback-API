@@ -17,6 +17,9 @@ venv.bak/
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.crt
 
 # --- FastAPI / общие артефакты сборки ---
 build/
@@ -46,13 +49,40 @@ logs/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# --- Celery ---
+celerybeat-schedule
+celerybeat-schedule.*
+celerybeat.pid
+
+# --- Frontend (Next.js / Node) ---
+node_modules/
+.next/
+out/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+.vercel/
+.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnp
+.pnp.*
 
 # --- IDE / редакторы ---
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-workspace
 
 # --- ОС-специфичные файлы ---
 .DS_Store
@@ -64,8 +94,19 @@ Thumbs.db
 
 # --- Инструменты / агенты ---
 .agents/
+.claude/settings.local.json
 skills-lock.json
 help.txt
 
 # --- Postman IDE (внутренние данные) ---
 .postman/
+
+# --- Локальные документы и конфиги (не для репозитория) ---
+AGENTS.md
+CLAUDE.md
+ARCHITECTURE.md
+PROJECT_STATUS.md
+TEST_FIXES.md
+api-service-repository.md
+alembic.ini
+pytest.ini
